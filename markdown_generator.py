@@ -1,4 +1,5 @@
 import requests
+import time
 import csv
 from pprint import pprint
 
@@ -31,16 +32,33 @@ for line in data[1:]:
 lst = []
 
 # create a list of lists with relevant data
+
 for datum in data_nice:
     if 'station_nm' in datum.keys():
-        temp = [datum['station_nm'], datum['site_no'], datum['huc_cd']]
-    lst.append(temp)
+        temp = [datum['station_nm'], datum['site_no'], datum['huc_cd'], ""]
+        temp[3] = "[link](./Pages/" + temp[1] + ".html)"
+    if temp not in lst:
+        lst.append(temp)
+        slug = temp[1] + ".md"
+        with open(slug, "w") as f:
+            f.write("Title: " + temp[1] + "\n")
+            f.write("Date: " + time.strftime("%y-%m-%d %H:%M \n"))
+            f.write("Category: DataPage\n")
+            f.write("status: hidden\n")
+            f.write("\n")
+            f.write("Station name: " + temp[0] + "\n\n")
+            f.write("Site number: " + temp[1] + "\n\n")
+            f.write("Hydrologic unit code: " + temp[2] + "\n\n")
+
 
 # function to print the data as an html table
-def markdown_table(arr):
-    print('Name and location | Site number | Hydrologic unit code')
-    print('--- | --- | ---')
-    for sublist in arr:
-        print(' | '.join(sublist))
+with open("DataTable.md", "w") as f:
+    f.write("Title: Stream Gage Table\n")
+    f.write("Date: " + time.strftime("%y-%m-%d %H:%M \n"))
+    f.write("Category: Data\n")
+    f.write('| Name and location | Site number | Hydrologic unit code | More information |\n')
+    f.write('| --- | --- | --- | --- |\n')
+    for sublist in lst:
+        f.write(' | '.join(sublist))
+        f.write("\n")
 
-markdown_table(lst)
